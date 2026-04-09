@@ -11,7 +11,8 @@ from config import COMPOSITES_DIR
 from pipeline.db import get_connection
 from pipeline.tile_loader import discover_tiles, read_tile, normalize_to_uint8
 from pipeline.composite import make_composite
-from PIL import Image, ImageDraw
+import numpy as np
+from PIL import Image, ImageDraw, ImageFilter
 
 DASHBOARD_DIR = Path(__file__).parent
 IMG_DIR = DASHBOARD_DIR / "img"
@@ -133,34 +134,46 @@ def generate_gallery_images():
         x1 = max(0, x2 - crop_size)
         y1 = max(0, y2 - crop_size)
 
-        patch = composite.crop((x1, y1, x2, y2)).convert("RGB")
-
-        # Draw annotation: crosshair + circle at detection center
-        draw = ImageDraw.Draw(patch)
-        # Detection center relative to crop
-        det_x = cx - x1
-        det_y = cy - y1
+        patch_gray = composite.crop((x1, y1, x2, y2))
+        patch = patch_gray.convert("RGB")
         color = TYPE_COLORS.get(d.get("feature_type", "").lower(), (232, 193, 112))
 
-        # Outer circle (feature highlight)
-        r = 30
-        draw.ellipse(
-            [det_x - r, det_y - r, det_x + r, det_y + r],
-            outline=color, width=2,
-        )
-        # Inner crosshair
-        ch = 8
+        # --- Feature highlight overlay ---
+        # Threshold bright pixels (the actual features in slope data)
+        # and tint them with the feature type color
+        arr = np.array(patch_gray)
+        # Use local adaptive threshold: bright relative to the patch
+        p75 = np.percentile(arr, 75)
+        p95 = np.percentile(arr, 95)
+        threshold = p75 + 0.6 * (p95 - p75)
+
+        # Create mask of bright pixels (the features)
+        bright_mask = arr > threshold
+        # Smooth the mask slightly to connect broken lines
+        mask_img = Image.fromarray((bright_mask * 255).astype(np.uint8))
+        mask_img = mask_img.filter(ImageFilter.MaxFilter(3))
+        bright_mask = np.array(mask_img) > 128
+
+        # Create colored overlay
+        overlay = np.array(patch, dtype=np.float64)
+        alpha = 0.55
+        for c_idx, c_val in enumerate(color):
+            overlay[:, :, c_idx] = np.where(
+                bright_mask,
+                overlay[:, :, c_idx] * (1 - alpha) + c_val * alpha,
+                overlay[:, :, c_idx],
+            )
+        patch = Image.fromarray(overlay.astype(np.uint8))
+
+        # --- Crosshair at detection center ---
+        draw = ImageDraw.Draw(patch)
+        det_x = cx - x1
+        det_y = cy - y1
+
+        # Small crosshair
+        ch = 10
         draw.line([det_x - ch, det_y, det_x + ch, det_y], fill=color, width=2)
         draw.line([det_x, det_y - ch, det_x, det_y + ch], fill=color, width=2)
-
-        # Corner bracket lines (makes the target area very clear)
-        br = 40
-        blen = 12
-        for sx, sy in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
-            bx = det_x + sx * br
-            by = det_y + sy * br
-            draw.line([bx, by, bx - sx * blen, by], fill=color, width=2)
-            draw.line([bx, by, bx, by - sy * blen], fill=color, width=2)
 
         patch.save(out_path, "JPEG", quality=90)
 
