@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Data (too large for git)
+composites/
+*.db
+
+# OS
+.DS_Store

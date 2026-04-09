@@ -1,0 +1,71 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7160507277434052,
+          50.875090037435285
+        ]
+      },
+      "properties": {
+        "id": 4,
+        "tile_id": "420000_108000",
+        "patch_id": "420000_108000_r1_c0",
+        "feature_type": "trackway",
+        "confidence": "high",
+        "description": "Prominent bright linear feature indicating a trackway or ancient road.",
+        "easting": 420075.0,
+        "northing": 108437.5,
+        "reviewed": 0,
+        "review_status": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7146363388483479,
+          50.87396253482533
+        ]
+      },
+      "properties": {
+        "id": 5,
+        "tile_id": "420000_108000",
+        "patch_id": "420000_108000_r1_c0",
+        "feature_type": "field system",
+        "confidence": "high",
+        "description": "Network of small, bounded rectangular areas suggesting an ancient field system.",
+        "easting": 420175.0,
+        "northing": 108312.5,
+        "reviewed": 0,
+        "review_status": null
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -1.7164177609956905,
+          50.873157551151735
+        ]
+      },
+      "properties": {
+        "id": 6,
+        "tile_id": "420000_108000",
+        "patch_id": "420000_108000_r1_c0",
+        "feature_type": "trackway",
+        "confidence": "medium",
+        "description": "Bright linear feature in the lower left corner, likely a trackway.",
+        "easting": 420050.0,
+        "northing": 108222.5,
+        "reviewed": 0,
+        "review_status": null
+      }
+    }
+  ]
+}

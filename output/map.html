@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cecdff92b4e62f3c451710203623e170 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_cecdff92b4e62f3c451710203623e170" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cecdff92b4e62f3c451710203623e170 = L.map(
+                "map_cecdff92b4e62f3c451710203623e170",
+                {
+                    center: [50.87, -1.6],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 11,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_59e73e5982689c489253f0d5d1a603e1 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_59e73e5982689c489253f0d5d1a603e1.addTo(map_cecdff92b4e62f3c451710203623e170);
+        
+    
+            var tile_layer_18470f37c6ba75574002b8e5535f4a9b = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 18,
+  "maxNativeZoom": 18,
+  "noWrap": false,
+  "attribution": "Esri",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_18470f37c6ba75574002b8e5535f4a9b.addTo(map_cecdff92b4e62f3c451710203623e170);
+        
+    
+            var feature_group_492522d8715a3b2774922b15496f37af = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_b0e1a3aa1af99075008e7438648d9c6f = L.marker(
+                [50.875090037435285, -1.7160507277434052],
+                {
+}
+            ).addTo(feature_group_492522d8715a3b2774922b15496f37af);
+        
+    
+            var icon_6c95bf0cc3e004ae8c82ae9de44cacf8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "star",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c76d1901b262a25f24e6092c656d8770 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d0d0582f6395e88cde5bcd87a597f592 = $(`<div id="html_d0d0582f6395e88cde5bcd87a597f592" style="width: 100.0%; height: 100.0%;">         <b>trackway</b><br>         <b>Confidence:</b> high<br>         <b>Tile:</b> 420000_108000<br>         <b>BNG:</b> 420075E, 108438N<br>         <b>Description:</b> Prominent bright linear feature indicating a trackway or ancient road.<br>         <b>Review:</b> None         </div>`)[0];
+                popup_c76d1901b262a25f24e6092c656d8770.setContent(html_d0d0582f6395e88cde5bcd87a597f592);
+            
+        
+
+        marker_b0e1a3aa1af99075008e7438648d9c6f.bindPopup(popup_c76d1901b262a25f24e6092c656d8770)
+        ;
+
+        
+    
+    
+            marker_b0e1a3aa1af99075008e7438648d9c6f.bindTooltip(
+                `<div>
+                     trackway (high)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_b0e1a3aa1af99075008e7438648d9c6f.setIcon(icon_6c95bf0cc3e004ae8c82ae9de44cacf8);
+            
+    
+            var marker_5d566e4328b875259952e6d241b25541 = L.marker(
+                [50.87396253482533, -1.7146363388483479],
+                {
+}
+            ).addTo(feature_group_492522d8715a3b2774922b15496f37af);
+        
+    
+            var icon_fd15e8616845ed6514012d7f51e9bbd8 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "star",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_30e102a67f619b22c0c837a514788258 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_8afcdf10e9a888e6e1537bfd5ad5edc2 = $(`<div id="html_8afcdf10e9a888e6e1537bfd5ad5edc2" style="width: 100.0%; height: 100.0%;">         <b>field system</b><br>         <b>Confidence:</b> high<br>         <b>Tile:</b> 420000_108000<br>         <b>BNG:</b> 420175E, 108312N<br>         <b>Description:</b> Network of small, bounded rectangular areas suggesting an ancient field system.<br>         <b>Review:</b> None         </div>`)[0];
+                popup_30e102a67f619b22c0c837a514788258.setContent(html_8afcdf10e9a888e6e1537bfd5ad5edc2);
+            
+        
+
+        marker_5d566e4328b875259952e6d241b25541.bindPopup(popup_30e102a67f619b22c0c837a514788258)
+        ;
+
+        
+    
+    
+            marker_5d566e4328b875259952e6d241b25541.bindTooltip(
+                `<div>
+                     field system (high)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_5d566e4328b875259952e6d241b25541.setIcon(icon_fd15e8616845ed6514012d7f51e9bbd8);
+            
+    
+            feature_group_492522d8715a3b2774922b15496f37af.addTo(map_cecdff92b4e62f3c451710203623e170);
+        
+    
+            var feature_group_b9c2ad3a750b84eb4f64a2c8a1a3b428 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_55e66de92dc13eff5e92f289cb6559bc = L.marker(
+                [50.873157551151735, -1.7164177609956905],
+                {
+}
+            ).addTo(feature_group_b9c2ad3a750b84eb4f64a2c8a1a3b428);
+        
+    
+            var icon_356f9268228531753324473521725f26 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "orange",
+  "iconColor": "white",
+  "icon": "info-sign",
+  "prefix": "glyphicon",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_c772458a665ea6adc434f81ac670c3c2 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_d48090b23cb2dfe65361d01a2fadcc65 = $(`<div id="html_d48090b23cb2dfe65361d01a2fadcc65" style="width: 100.0%; height: 100.0%;">         <b>trackway</b><br>         <b>Confidence:</b> medium<br>         <b>Tile:</b> 420000_108000<br>         <b>BNG:</b> 420050E, 108222N<br>         <b>Description:</b> Bright linear feature in the lower left corner, likely a trackway.<br>         <b>Review:</b> None         </div>`)[0];
+                popup_c772458a665ea6adc434f81ac670c3c2.setContent(html_d48090b23cb2dfe65361d01a2fadcc65);
+            
+        
+
+        marker_55e66de92dc13eff5e92f289cb6559bc.bindPopup(popup_c772458a665ea6adc434f81ac670c3c2)
+        ;
+
+        
+    
+    
+            marker_55e66de92dc13eff5e92f289cb6559bc.bindTooltip(
+                `<div>
+                     trackway (medium)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_55e66de92dc13eff5e92f289cb6559bc.setIcon(icon_356f9268228531753324473521725f26);
+            
+    
+            feature_group_b9c2ad3a750b84eb4f64a2c8a1a3b428.addTo(map_cecdff92b4e62f3c451710203623e170);
+        
+    
+            var feature_group_3dc20a6ff30ba6d1a18c9b1aa048b624 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var layer_control_023afd362c5466bf1cae69fc3c89cf72_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_59e73e5982689c489253f0d5d1a603e1,
+                    "Satellite" : tile_layer_18470f37c6ba75574002b8e5535f4a9b,
+                },
+                overlays :  {
+                    "High confidence" : feature_group_492522d8715a3b2774922b15496f37af,
+                    "Medium confidence" : feature_group_b9c2ad3a750b84eb4f64a2c8a1a3b428,
+                    "Low confidence" : feature_group_3dc20a6ff30ba6d1a18c9b1aa048b624,
+                },
+            };
+            let layer_control_023afd362c5466bf1cae69fc3c89cf72 = L.control.layers(
+                layer_control_023afd362c5466bf1cae69fc3c89cf72_layers.base_layers,
+                layer_control_023afd362c5466bf1cae69fc3c89cf72_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_cecdff92b4e62f3c451710203623e170);
+
+        
+</script>
+</html>

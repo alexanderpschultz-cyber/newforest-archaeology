@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Forest Archaeological Survey</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #0f1923; color: #e0e0e0; }
+
+        header {
+            background: linear-gradient(135deg, #1a2a3a 0%, #0f1923 100%);
+            border-bottom: 1px solid #2a3a4a;
+            padding: 20px 30px;
+        }
+        header h1 { font-size: 1.6em; color: #e8c170; font-weight: 600; }
+        header p { color: #8a9ab0; margin-top: 4px; font-size: 0.9em; }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            grid-template-rows: auto 1fr;
+            height: calc(100vh - 80px);
+        }
+
+        /* Stats bar */
+        .stats-bar {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 12px;
+            padding: 15px 20px;
+            background: #141e2a;
+            border-bottom: 1px solid #2a3a4a;
+            overflow-x: auto;
+        }
+        .stat-card {
+            background: #1a2a3a;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 12px 18px;
+            min-width: 130px;
+            text-align: center;
+        }
+        .stat-card .value { font-size: 1.8em; font-weight: 700; color: #e8c170; }
+        .stat-card .label { font-size: 0.75em; color: #8a9ab0; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+        /* Map */
+        #map {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: #141e2a;
+            border-left: 1px solid #2a3a4a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .sidebar-header {
+            padding: 15px 18px;
+            border-bottom: 1px solid #2a3a4a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar-header h2 { font-size: 1em; color: #e8c170; }
+        .sidebar-header select {
+            background: #1a2a3a;
+            color: #e0e0e0;
+            border: 1px solid #2a3a4a;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8em;
+        }
+
+        .gallery {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .gallery::-webkit-scrollbar { width: 6px; }
+        .gallery::-webkit-scrollbar-track { background: #0f1923; }
+        .gallery::-webkit-scrollbar-thumb { background: #2a3a4a; border-radius: 3px; }
+
+        .detection-card {
+            background: #1a2a3a;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .detection-card:hover { border-color: #e8c170; }
+        .detection-card.active { border-color: #e8c170; box-shadow: 0 0 12px rgba(232, 193, 112, 0.2); }
+
+        .detection-card img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+            background: #0f1923;
+        }
+        .detection-card .info { padding: 10px 12px; }
+        .detection-card .type-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .detection-card .feat-type { font-weight: 600; font-size: 0.9em; text-transform: capitalize; }
+        .detection-card .desc { font-size: 0.78em; color: #8a9ab0; margin-top: 6px; line-height: 1.4; }
+        .detection-card .meta { font-size: 0.7em; color: #5a6a7a; margin-top: 6px; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-high { background: #2d4a3e; color: #4ecca3; }
+        .badge-medium { background: #4a3d20; color: #f9a825; }
+        .badge-low { background: #3a2a2a; color: #999; }
+
+        /* Type legend */
+        .type-legend {
+            padding: 10px 18px;
+            border-top: 1px solid #2a3a4a;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7em;
+            color: #8a9ab0;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .legend-item:hover { background: #1a2a3a; }
+        .legend-item .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 60px 20px;
+            color: #5a6a7a;
+        }
+        .no-data h3 { color: #8a9ab0; margin-bottom: 10px; }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 50vh auto;
+            }
+            .sidebar { border-left: none; border-top: 1px solid #2a3a4a; max-height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>New Forest Archaeological Survey</h1>
+        <p>AI-assisted detection of archaeological features from LIDAR data</p>
+    </header>
+
+    <div class="layout">
+        <div class="stats-bar" id="statsBar"></div>
+        <div id="map"></div>
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>Detections</h2>
+                <select id="filterConf">
+                    <option value="">All confidence</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            <div class="gallery" id="gallery"></div>
+            <div class="type-legend" id="legend"></div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+    <script>
+    const TYPE_COLORS = {
+        'barrow': '#e74c3c',
+        'enclosure': '#3498db',
+        'field system': '#2ecc71',
+        'trackway': '#e67e22',
+        'hollow way': '#e67e22',
+        'platform': '#9b59b6',
+        'charcoal hearth': '#c0392b',
+        'pond bay': '#1abc9c',
+        'pillow mound': '#e91e63',
+        'earthwork': '#f39c12',
+        'ditch': '#5dade2',
+        'bank': '#58d68d',
+    };
+
+    function getColor(type) {
+        return TYPE_COLORS[type.toLowerCase()] || '#95a5a6';
+    }
+
+    let map, markers, allDetections = [], activeCard = null;
+
+    async function init() {
+        // Load data
+        let data;
+        try {
+            const resp = await fetch('data/detections.json');
+            data = await resp.json();
+        } catch (e) {
+            document.getElementById('gallery').innerHTML =
+                '<div class="no-data"><h3>No data yet</h3><p>Run the pipeline and then <code>python dashboard/build.py</code> to generate data.</p></div>';
+            initMap();
+            return;
+        }
+
+        allDetections = data.detections;
+        renderStats(data.stats);
+        initMap();
+        renderMarkers(allDetections);
+        renderGallery(allDetections);
+        renderLegend(data.stats.by_type);
+
+        document.getElementById('filterConf').addEventListener('change', (e) => {
+            const val = e.target.value;
+            const filtered = val ? allDetections.filter(d => d.confidence === val) : allDetections;
+            renderMarkers(filtered);
+            renderGallery(filtered);
+        });
+    }
+
+    function renderStats(stats) {
+        const bar = document.getElementById('statsBar');
+        const cards = [
+            { value: stats.total_detections, label: 'Detections' },
+            { value: stats.tiles_processed, label: 'Tiles Scanned' },
+            { value: stats.tiles_with_features, label: 'Tiles with Features' },
+            { value: stats.by_confidence.high || 0, label: 'High Confidence' },
+            { value: stats.by_confidence.medium || 0, label: 'Medium' },
+            { value: stats.by_confidence.low || 0, label: 'Low' },
+        ];
+        // Add type counts
+        for (const [type, count] of Object.entries(stats.by_type).sort((a, b) => b[1] - a[1])) {
+            cards.push({ value: count, label: type });
+        }
+        bar.innerHTML = cards.map(c =>
+            `<div class="stat-card"><div class="value">${c.value}</div><div class="label">${c.label}</div></div>`
+        ).join('');
+    }
+
+    function initMap() {
+        map = L.map('map').setView([50.87, -1.60], 11);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxZoom: 19,
+        }).addTo(map);
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri',
+            maxZoom: 19,
+        });
+
+        // Layer control
+        const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap',
+        });
+        const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Esri',
+        });
+        osm.addTo(map);
+        L.control.layers({ 'OpenStreetMap': osm, 'Satellite': sat }).addTo(map);
+
+        markers = L.markerClusterGroup({ maxClusterRadius: 40 });
+        map.addLayer(markers);
+    }
+
+    function renderMarkers(detections) {
+        markers.clearLayers();
+        detections.forEach(d => {
+            const color = getColor(d.feature_type);
+            const icon = L.divIcon({
+                className: '',
+                html: `<div style="width:14px;height:14px;border-radius:50%;background:${color};border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>`,
+                iconSize: [14, 14],
+                iconAnchor: [7, 7],
+            });
+            const marker = L.marker([d.centroid_lat, d.centroid_lon], { icon })
+                .bindPopup(`
+                    <b style="text-transform:capitalize">${d.feature_type}</b><br>
+                    <b>Confidence:</b> ${d.confidence}<br>
+                    <b>Tile:</b> ${d.tile_id}<br>
+                    <b>BNG:</b> ${Math.round(d.centroid_easting)}E, ${Math.round(d.centroid_northing)}N<br>
+                    <b>Description:</b> ${d.description || '—'}
+                `, { maxWidth: 280 });
+            marker._detId = d.id;
+            marker.on('click', () => highlightCard(d.id));
+            markers.addLayer(marker);
+        });
+
+        if (detections.length > 0) {
+            const group = L.featureGroup(markers.getLayers());
+            if (group.getLayers().length > 0) {
+                map.fitBounds(markers.getBounds().pad(0.1));
+            }
+        }
+    }
+
+    function renderGallery(detections) {
+        const gallery = document.getElementById('gallery');
+        if (detections.length === 0) {
+            gallery.innerHTML = '<div class="no-data"><h3>No detections</h3><p>Adjust filters or run the pipeline.</p></div>';
+            return;
+        }
+        gallery.innerHTML = detections.map(d => `
+            <div class="detection-card" id="card-${d.id}" onclick="flyTo(${d.id}, ${d.centroid_lat}, ${d.centroid_lon})">
+                <img src="img/det_${d.id}.jpg" alt="${d.feature_type}" onerror="this.style.display='none'" loading="lazy">
+                <div class="info">
+                    <div class="type-row">
+                        <span class="feat-type" style="color:${getColor(d.feature_type)}">${d.feature_type}</span>
+                        <span class="badge badge-${d.confidence}">${d.confidence}</span>
+                    </div>
+                    <div class="desc">${d.description || ''}</div>
+                    <div class="meta">${d.tile_id} &middot; ${Math.round(d.centroid_easting)}E ${Math.round(d.centroid_northing)}N</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderLegend(byType) {
+        const legend = document.getElementById('legend');
+        legend.innerHTML = Object.entries(byType)
+            .sort((a, b) => b[1] - a[1])
+            .map(([type, count]) =>
+                `<div class="legend-item"><span class="dot" style="background:${getColor(type)}"></span>${type} (${count})</div>`
+            ).join('');
+    }
+
+    function flyTo(id, lat, lon) {
+        map.flyTo([lat, lon], 16, { duration: 0.8 });
+        highlightCard(id);
+        // Open popup
+        markers.eachLayer(m => {
+            if (m._detId === id) m.openPopup();
+        });
+    }
+
+    function highlightCard(id) {
+        if (activeCard) activeCard.classList.remove('active');
+        const card = document.getElementById(`card-${id}`);
+        if (card) {
+            card.classList.add('active');
+            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            activeCard = card;
+        }
+    }
+
+    init();
+    </script>
+</body>
+</html>

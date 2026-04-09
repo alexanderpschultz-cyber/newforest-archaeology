@@ -1,0 +1,66 @@
+{
+  "detections": [
+    {
+      "id": 6,
+      "tile_id": "420000_108000",
+      "patch_id": "420000_108000_r1_c0",
+      "feature_type": "trackway",
+      "confidence": "medium",
+      "description": "Bright linear feature in the lower left corner, likely a trackway.",
+      "x_percent": 5.0,
+      "y_percent": 77.75000000000001,
+      "centroid_easting": 420050.0,
+      "centroid_northing": 108222.5,
+      "centroid_lat": 50.873157551151735,
+      "centroid_lon": -1.7164177609956905,
+      "reviewed": 0,
+      "review_status": null
+    },
+    {
+      "id": 5,
+      "tile_id": "420000_108000",
+      "patch_id": "420000_108000_r1_c0",
+      "feature_type": "field system",
+      "confidence": "high",
+      "description": "Network of small, bounded rectangular areas suggesting an ancient field system.",
+      "x_percent": 17.5,
+      "y_percent": 68.75,
+      "centroid_easting": 420175.0,
+      "centroid_northing": 108312.5,
+      "centroid_lat": 50.87396253482533,
+      "centroid_lon": -1.7146363388483479,
+      "reviewed": 0,
+      "review_status": null
+    },
+    {
+      "id": 4,
+      "tile_id": "420000_108000",
+      "patch_id": "420000_108000_r1_c0",
+      "feature_type": "trackway",
+      "confidence": "high",
+      "description": "Prominent bright linear feature indicating a trackway or ancient road.",
+      "x_percent": 7.5,
+      "y_percent": 56.25,
+      "centroid_easting": 420075.0,
+      "centroid_northing": 108437.5,
+      "centroid_lat": 50.875090037435285,
+      "centroid_lon": -1.7160507277434052,
+      "reviewed": 0,
+      "review_status": null
+    }
+  ],
+  "stats": {
+    "total_detections": 3,
+    "tiles_processed": 1,
+    "tiles_with_features": 1,
+    "by_type": {
+      "trackway": 2,
+      "field system": 1
+    },
+    "by_confidence": {
+      "high": 2,
+      "medium": 1,
+      "low": 0
+    }
+  }
+}
