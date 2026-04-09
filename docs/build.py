@@ -11,7 +11,7 @@ from config import COMPOSITES_DIR
 from pipeline.db import get_connection
 from pipeline.tile_loader import discover_tiles, read_tile, normalize_to_uint8
 from pipeline.composite import make_composite
-from PIL import Image
+from PIL import Image, ImageDraw
 
 DASHBOARD_DIR = Path(__file__).parent
 IMG_DIR = DASHBOARD_DIR / "img"
@@ -77,10 +77,23 @@ def generate_gallery_images():
 
     conn = get_connection()
     detections = conn.execute("""
-        SELECT id, tile_id, x_percent, y_percent FROM detections
+        SELECT id, tile_id, x_percent, y_percent, feature_type FROM detections
         WHERE centroid_lat IS NOT NULL
     """).fetchall()
     conn.close()
+
+    TYPE_COLORS = {
+        "barrow": (231, 76, 60),
+        "enclosure": (52, 152, 219),
+        "field system": (46, 204, 113),
+        "trackway": (230, 126, 34),
+        "hollow way": (230, 126, 34),
+        "platform": (155, 89, 182),
+        "charcoal hearth": (192, 57, 43),
+        "pond bay": (26, 188, 156),
+        "pillow mound": (233, 30, 99),
+        "earthwork": (243, 156, 18),
+    }
 
     tiles = discover_tiles()
     composite_cache = {}
@@ -90,9 +103,8 @@ def generate_gallery_images():
         tile_id = d["tile_id"]
         det_id = d["id"]
 
+        # Always regenerate so annotations are up to date
         out_path = IMG_DIR / f"det_{det_id}.jpg"
-        if out_path.exists():
-            continue
 
         # Get or create composite
         if tile_id not in composite_cache:
@@ -106,12 +118,12 @@ def generate_gallery_images():
         composite = composite_cache[tile_id]
         w, h = composite.size
 
-        # Crop a 200x200 region centered on the detection
+        # Crop a 300x300 region centered on the detection (larger for context)
         x_pct = d.get("x_percent") or 50
         y_pct = d.get("y_percent") or 50
         cx = int(x_pct / 100 * w)
         cy = int(y_pct / 100 * h)
-        crop_size = 200
+        crop_size = 300
         half = crop_size // 2
 
         x1 = max(0, cx - half)
@@ -122,9 +134,37 @@ def generate_gallery_images():
         y1 = max(0, y2 - crop_size)
 
         patch = composite.crop((x1, y1, x2, y2)).convert("RGB")
-        patch.save(out_path, "JPEG", quality=85)
 
-    print(f"Generated gallery images for {len(detections)} detections")
+        # Draw annotation: crosshair + circle at detection center
+        draw = ImageDraw.Draw(patch)
+        # Detection center relative to crop
+        det_x = cx - x1
+        det_y = cy - y1
+        color = TYPE_COLORS.get(d.get("feature_type", "").lower(), (232, 193, 112))
+
+        # Outer circle (feature highlight)
+        r = 30
+        draw.ellipse(
+            [det_x - r, det_y - r, det_x + r, det_y + r],
+            outline=color, width=2,
+        )
+        # Inner crosshair
+        ch = 8
+        draw.line([det_x - ch, det_y, det_x + ch, det_y], fill=color, width=2)
+        draw.line([det_x, det_y - ch, det_x, det_y + ch], fill=color, width=2)
+
+        # Corner bracket lines (makes the target area very clear)
+        br = 40
+        blen = 12
+        for sx, sy in [(-1, -1), (1, -1), (-1, 1), (1, 1)]:
+            bx = det_x + sx * br
+            by = det_y + sy * br
+            draw.line([bx, by, bx - sx * blen, by], fill=color, width=2)
+            draw.line([bx, by, bx, by - sy * blen], fill=color, width=2)
+
+        patch.save(out_path, "JPEG", quality=90)
+
+    print(f"Generated annotated gallery images for {len(detections)} detections")
 
 
 if __name__ == "__main__":
