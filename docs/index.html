@@ -179,6 +179,56 @@
         }
         .no-data h3 { color: #8a9ab0; margin-bottom: 10px; }
 
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.92);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            padding: 30px;
+        }
+        .lightbox.open { display: flex; }
+        .lightbox img {
+            max-width: min(90vw, 800px);
+            max-height: 65vh;
+            border-radius: 6px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.6);
+            image-rendering: auto;
+        }
+        .lightbox .lb-info {
+            background: #1a2a3a;
+            border: 1px solid #2a3a4a;
+            border-radius: 8px;
+            padding: 16px 24px;
+            max-width: min(90vw, 800px);
+            width: 100%;
+        }
+        .lightbox .lb-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            text-transform: capitalize;
+            margin-bottom: 6px;
+        }
+        .lightbox .lb-desc { color: #8a9ab0; font-size: 0.9em; line-height: 1.5; }
+        .lightbox .lb-meta { color: #5a6a7a; font-size: 0.8em; margin-top: 8px; }
+        .lightbox .lb-close {
+            position: absolute;
+            top: 20px;
+            right: 28px;
+            background: none;
+            border: none;
+            color: #8a9ab0;
+            font-size: 2em;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .lightbox .lb-close:hover { color: #e8c170; }
+
         @media (max-width: 900px) {
             .layout {
                 grid-template-columns: 1fr;
@@ -193,6 +243,17 @@
         <h1>New Forest Archaeological Survey</h1>
         <p>AI-assisted detection of archaeological features from LIDAR data</p>
     </header>
+
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lb-close" onclick="closeLightbox()">&times;</button>
+        <img id="lb-img" src="" alt="">
+        <div class="lb-info">
+            <div class="lb-title" id="lb-title"></div>
+            <div id="lb-badge"></div>
+            <div class="lb-desc" id="lb-desc"></div>
+            <div class="lb-meta" id="lb-meta"></div>
+        </div>
+    </div>
 
     <div class="layout">
         <div class="stats-bar" id="statsBar"></div>
@@ -348,12 +409,12 @@
             return;
         }
         gallery.innerHTML = detections.map(d => `
-            <div class="detection-card" id="card-${d.id}" onclick="flyTo(${d.id}, ${d.centroid_lat}, ${d.centroid_lon})">
-                <div class="img-wrapper">
+            <div class="detection-card" id="card-${d.id}">
+                <div class="img-wrapper" onclick="openLightbox(${d.id})" title="Click to enlarge">
                     <img src="img/det_${d.id}.jpg" alt="${d.feature_type}" onerror="this.parentElement.style.display='none'" loading="lazy">
                     <div class="img-label" style="border-left: 3px solid ${getColor(d.feature_type)}">${d.feature_type}</div>
                 </div>
-                <div class="info">
+                <div class="info" onclick="flyTo(${d.id}, ${d.centroid_lat}, ${d.centroid_lon})">
                     <div class="type-row">
                         <span class="feat-type" style="color:${getColor(d.feature_type)}">${d.feature_type}</span>
                         <span class="badge badge-${d.confidence}">${d.confidence}</span>
@@ -392,6 +453,31 @@
             activeCard = card;
         }
     }
+
+    function openLightbox(id) {
+        const d = allDetections.find(det => det.id === id);
+        if (!d) return;
+        document.getElementById('lb-img').src = `img/det_${id}.jpg`;
+        document.getElementById('lb-title').textContent = d.feature_type;
+        document.getElementById('lb-title').style.color = getColor(d.feature_type);
+        document.getElementById('lb-badge').innerHTML =
+            `<span class="badge badge-${d.confidence}">${d.confidence} confidence</span>`;
+        document.getElementById('lb-desc').textContent = d.description || '';
+        document.getElementById('lb-meta').textContent =
+            `Tile: ${d.tile_id}  |  BNG: ${Math.round(d.centroid_easting)}E, ${Math.round(d.centroid_northing)}N  |  WGS84: ${d.centroid_lat.toFixed(5)}, ${d.centroid_lon.toFixed(5)}`;
+        document.getElementById('lightbox').classList.add('open');
+    }
+
+    function closeLightbox(event) {
+        // Only close if clicking the backdrop or the close button, not the content
+        if (event && event.target !== document.getElementById('lightbox') &&
+            !event.target.classList.contains('lb-close')) return;
+        document.getElementById('lightbox').classList.remove('open');
+    }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') document.getElementById('lightbox').classList.remove('open');
+    });
 
     init();
     </script>

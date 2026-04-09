@@ -119,12 +119,12 @@ def generate_gallery_images():
         composite = composite_cache[tile_id]
         w, h = composite.size
 
-        # Crop a 300x300 region centered on the detection (larger for context)
+        # Crop a 500x500 region centered on the detection
         x_pct = d.get("x_percent") or 50
         y_pct = d.get("y_percent") or 50
         cx = int(x_pct / 100 * w)
         cy = int(y_pct / 100 * h)
-        crop_size = 300
+        crop_size = 500
         half = crop_size // 2
 
         x1 = max(0, cx - half)
